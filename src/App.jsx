@@ -3,11 +3,19 @@ import "./App.css";
 // Import Components
 //-----------------------------------------------------------------------------
 
-function Todo({ todo }) {
+function Todo({ todo, index, completeTodo, removeTodo }) {// This creates the Todo ITEM, which displays the INDIVIDUAL TODO ITEM.
   // Pass in the {todo} that will be created and rendered in the App Component
   return(
-    <div className="todo">
+    <div className="todo"
+      style={{ textDecoration: todo.isCompleted ? "line-through" : ""}} 
+    >
       {todo.text}
+      <div>
+        <button onClick={() => completeTodo(index)}>Complete</button>
+      </div>
+      <div>
+        <button onClick={() => removeTodo(index)}>X</button>
+      </div>
     </div>
   );
 };
@@ -51,11 +59,35 @@ function App() {
   //------------------------------------------------------------------
   // The hook "useState"  is what React uses to hook into the state or lifecycle methods of the component.  You will then create an array of objects and you will have the beginnings of your state.
   const [todos, setTodos] = React.useState([
-    {text: "Learn about React"},
-    {text: "Build React App"},
-    {text: "Finish Vanilla JS Apps"},
+    {text: "Learn about React",
+  isCompleted: false},
+    {text: "Build React App",
+  isCompleted: false},
+    {text: "Finish Vanilla JS Apps",
+  isCompleted: false},
     // The Todo function will create the text of the above todos... 
   ])
+
+  const addTodo = text => {
+    const newTodos = [...todos, {text}]; // The spread(...) operator adds the current todos list onto the newly created todo.
+    setTodos(newTodos);
+  }
+
+  const completeTodo = (index) => {
+    const newTodos = [...todos];// get the current list of todos...
+    newTodos[index].isCompleted = true;// change the state of the selected Todo to "completed" 
+    setTodos(newTodos);// render the todo list again with the updated state of "completed" on the selected todo.
+}
+
+  const removeTodo = (index) => {
+    // get the current list of todos...
+    const newTodos = [...todos];
+    // remove the selected todo from the list with .splice()
+    newTodos.splice(index, 1);
+    // render the todo list again with the selected Todo removed from the list.
+    setTodos(newTodos);
+  }
+//------------------------------------------------------------------------------------------------
   return(
     <div className="app">
       <div className="todo-list">
@@ -64,6 +96,8 @@ function App() {
             key={index}
             index={index}
             todo={todo}
+            completeTodo={completeTodo}
+            removeTodo={removeTodo}
           />
           // By using .map(), you will create a new array of items by mapping over the todo items from state and displaying them by index.
         ))}
